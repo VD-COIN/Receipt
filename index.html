@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DART 🎯 Receipt Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eef2f7;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2b6cb0;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin: 12px 0;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    button {
+      background: #2b6cb0;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+
+    #receipt {
+      margin-top: 40px;
+      padding: 30px;
+      border: 1px solid #ccc;
+      background: white;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    #receipt h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2b6cb0;
+      font-size: 22px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #2b6cb0;
+      margin-bottom: 10px;
+    }
+
+    .receipt-line {
+      margin: 12px 0;
+      font-size: 16px;
+    }
+
+    .receipt-box {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #fafafa;
+    }
+
+    .signature {
+      margin-top: 40px;
+      text-align: right;
+      position: relative;
+    }
+
+    .signature img {
+      height: 60px;
+    }
+
+    .stamp {
+      position: absolute;
+      left: 20px;
+      bottom: -10px;
+    }
+
+    .stamp img {
+      height: 80px;
+      opacity: 0.6;
+    }
+
+    .signature-text {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    .legal {
+      font-size: 12px;
+      margin-top: 30px;
+      color: #555;
+      text-align: center;
+      border-top: 1px dashed #aaa;
+      padding-top: 10px;
+    }
+
+    #download {
+      display: none;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>DART 🎯 Receipt Generator</h1>
+
+  <div class="form-group">
+    <label>Name of the User</label>
+    <input type="text" id="name">
+  </div>
+
+  <div class="form-group">
+    <label>Amount (ETB)</label>
+    <input type="number" id="amount">
+  </div>
+
+  <div class="form-group">
+    <label>Reason for Payment</label>
+    <textarea id="reason" rows="2"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Authority Name</label>
+    <input type="text" id="authority">
+  </div>
+
+  <div class="form-group">
+    <label>Date</label>
+    <input type="date" id="date">
+  </div>
+
+  <div class="form-group">
+    <label>TIN Number</label>
+    <input type="text" id="tin">
+  </div>
+
+  <button onclick="generateReceipt()">Generate Receipt</button>
+
+  <div id="receipt" style="display: none;">
+    <div class="receipt-box">
+      <div class="logo">DART 🎯</div>
+      <h2>Official Payment Receipt</h2>
+      <div class="receipt-line"><strong>Received From:</strong> <span id="r_name"></span></div>
+      <div class="receipt-line"><strong>Amount Paid:</strong> <span id="r_amount"></span> ETB</div>
+      <div class="receipt-line"><strong>Reason:</strong> <span id="r_reason"></span></div>
+      <div class="receipt-line"><strong>Date:</strong> <span id="r_date"></span></div>
+      <div class="receipt-line"><strong>TIN Number:</strong> <span id="r_tin"></span></div>
+      <div class="receipt-line"><strong>Authorized By:</strong> <span id="r_authority"></span></div>
+
+      <div class="signature">
+        <img src="sign.jpeg" alt="Signature" />
+        <div class="signature-text">Authorized Signature</div>
+        <div class="stamp"><img src="stamp.png" alt="Stamp" /></div>
+      </div>
+    </div>
+
+    <div class="legal">
+  This receipt is issued by <strong>DART Technologies Company</strong> as an official acknowledgment of payment. It serves as valid proof of the transaction described above.<br><br>
+  The recipient is advised to retain this document for future reference, audits, or any financial or legal inquiries. Unauthorized duplication or falsification of this receipt is strictly prohibited and may result in legal consequences under applicable laws.<br><br>
+  DART Technologies Company assumes no liability for any loss arising from misuse or alteration of this document.
+</div>
+  </div>
+
+  <button id="download" onclick="downloadImage()">Download as Image</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    function generateReceipt() {
+      const name = document.getElementById("name").value;
+      const amount = document.getElementById("amount").value;
+      const reason = document.getElementById("reason").value;
+      const authority = document.getElementById("authority").value;
+      const date = document.getElementById("date").value;
+      const tin = document.getElementById("tin").value;
+
+      if (!name || !amount || !reason || !authority || !date || !tin) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      document.getElementById("r_name").innerText = name;
+      document.getElementById("r_amount").innerText = amount;
+      document.getElementById("r_reason").innerText = reason;
+      document.getElementById("r_authority").innerText = authority;
+      document.getElementById("r_date").innerText = date;
+      document.getElementById("r_tin").innerText = tin;
+
+      document.getElementById("receipt").style.display = "block";
+      document.getElementById("download").style.display = "block";
+    }
+
+    function downloadImage() {
+      html2canvas(document.getElementById("receipt")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "DART_Receipt.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
